@@ -89,10 +89,10 @@ class LineFollowing(rclpy.node.Node):
 
         if (self.lineposition > 640 / 3 * 2):
             # linie rechts
-            turn = speed_turn * 1
+            turn = speed_turn * -1
         elif self.lineposition < 640 / 3:
             # linie links
-            turn = speed_turn * -1
+            turn = speed_turn * 1
 
         # create message
         msg = Twist()
