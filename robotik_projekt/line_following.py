@@ -70,7 +70,7 @@ class LineFollowing(rclpy.node.Node):
         self.lineposition = width / 2
         brightness = 0
         for x in range(len(img_row)):
-            if x > 640 / 3 and x < (640 / 3) * 2:
+            if x > 100 and x < 640-100:
                 if img_row[x] >= brightness:
                     brightness = img_row[x]
                     # print("index: " + str(x) + " brightness: " + str(brightness))
@@ -89,20 +89,20 @@ class LineFollowing(rclpy.node.Node):
         speed = speed_drive
         turn = 0.0  # default linie mittig
 
-        if (self.lineposition > 358):
+        if (self.lineposition > (640/3)*2):
             # linie rechts
             turn = speed_turn * -1
             speed = 0.0
             print("rechts")
-        elif self.lineposition < 286:
+        elif self.lineposition < 640/3:
+            turn = speed_turn * 1
+            speed = 0.0
+            print("links")
+        else:
             # linie mittig
             turn = 0.0
             speed = speed_drive
             print("gerade")
-        else:
-            turn = speed_turn * 1
-            speed = 0.0
-            print("links")
 
         # create message
         msg = Twist()
