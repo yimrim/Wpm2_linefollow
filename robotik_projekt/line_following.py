@@ -8,6 +8,7 @@ import rclpy.node
 from cv_bridge import CvBridge
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import CompressedImage
+from urllib3.packages.six import print_
 
 
 class LineFollowing(rclpy.node.Node):
@@ -89,25 +90,28 @@ class LineFollowing(rclpy.node.Node):
         speed = speed_drive
         turn = 0.0  # default linie mittig
 
-        if (self.lineposition > (640 / 3) * 2):
+        if (self.lineposition > 358):
             # linie rechts
             turn = speed_turn * -1
             speed = 0.0
-        elif self.lineposition < 640 / 3:
-            # linie links
-            turn = speed_turn * 1
-            speed = 0.0
-        else:
+            print("rechts")
+        elif self.lineposition < 286:
+            # linie mittig
             turn = 0.0
             speed = speed_drive
+            print("gerade")
+        else:
+            turn = speed_turn * 1
+            speed = 0.0
+            print("links")
 
         # create message
         msg = Twist()
         msg.linear.x = speed
         msg.angular.z = turn
 
-        print("speed: " + str(speed))
-        print("turn: " + str(turn))
+        # print("speed: " + str(speed))
+        # print("turn: " + str(turn))
 
         # send message
         self.publisher_.publish(msg)
