@@ -55,7 +55,6 @@ class SimpleDriving(rclpy.node.Node):
             'line_following_twist',
             self.line_following_twist_callback,
             qos_profile=qos_policy)
-        self.subscription
 
     # handling received laser scan data
     def scanner_callback(self, msg):
@@ -102,14 +101,14 @@ class SimpleDriving(rclpy.node.Node):
             turn = 0.0
             print('stop')
 
-        # create message
-        msg = Twist()
-        msg.linear.x = speed
-        msg.angular.z = turn
+        if(not self.normal_drive):
+            # create message
+            msg = Twist()
+            msg.linear.x = speed
+            msg.angular.z = turn
 
-        # send message
-        self.publisher_.publish(msg)
-
+            # send message
+            self.publisher_.publish(msg)
 
 def main(args=None):
     print('Hi from robotik_projekt.')
