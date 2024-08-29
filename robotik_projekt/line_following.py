@@ -19,7 +19,7 @@ class LineFollowing(rclpy.node.Node):
         self.declare_parameter('boundary_left', 90)
         self.declare_parameter('boundary_right', 200)
         self.declare_parameter('threshold_line', 100)
-        self.declare_parameter('speed_drive', -0.1)
+        self.declare_parameter('speed_drive', -0.03)
         self.declare_parameter('speed_turn', 0.5)
 
         # position of brightes pixel in
