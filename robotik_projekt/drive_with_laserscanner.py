@@ -6,10 +6,9 @@ value is used per scan of the laser scanner.
 
 import rclpy
 import rclpy.node
-
-from std_msgs.msg import String
-from sensor_msgs.msg import LaserScan
 from geometry_msgs.msg import Twist
+from sensor_msgs.msg import LaserScan
+
 
 class SimpleDriving(rclpy.node.Node):
 
@@ -24,6 +23,9 @@ class SimpleDriving(rclpy.node.Node):
         self.declare_parameter('speed_slow', 0.1)
         self.declare_parameter('speed_turn', 0.4)
         self.declare_parameter('laserscan_beam_to_use', 0)
+
+        # zustand
+        self.normal_drive = True
 
         # variable for the last sensor reading
         self.last_distance = 0.0
@@ -48,6 +50,12 @@ class SimpleDriving(rclpy.node.Node):
         timer_period = 0.5  # seconds
         self.my_timer = self.create_timer(timer_period, self.timer_callback)
 
+        self.subscription = self.create_subscription(
+            Twist,
+            'line_following_twist',
+            self.line_following_twist_callback,
+            qos_profile=qos_policy)
+        self.subscription
 
     # handling received laser scan data
     def scanner_callback(self, msg):
@@ -56,6 +64,9 @@ class SimpleDriving(rclpy.node.Node):
         self.last_distance = msg.ranges[self.get_parameter('laserscan_beam_to_use').get_parameter_value().integer_value]
         print(self.last_distance)
 
+    def line_following_twist_callback(self, msg):
+        if self.normal_drive:
+            self.publisher_.publish(msg)
 
     # driving logic
     def timer_callback(self):
@@ -67,24 +78,26 @@ class SimpleDriving(rclpy.node.Node):
 
         # no or far away obstacle
         if (self.last_distance == 0.0) or (self.last_distance > distance_slow):
-            speed = self.get_parameter('speed_fast').get_parameter_value().double_value
-            turn = 0.0
-            print('drive fast', speed)
+            self.normal_drive = True
+            print('drive fast')
 
         # obstacle close enough to reduce speed
         elif (self.last_distance <= distance_slow) and (self.last_distance > distance_turn):
+            self.normal_drive = False
             speed = self.get_parameter('speed_slow').get_parameter_value().double_value
             turn = 0.0
             print('drive slow')
 
         # obstacle close enough to turn
         elif (self.last_distance <= distance_turn) and (self.last_distance > distance_stop):
+            self.normal_drive = False
             speed = 0.0
             turn = self.get_parameter('speed_turn').get_parameter_value().double_value
             print('turn')
 
         # obstacle too close, emergency stop
         else:
+            self.normal_drive = False
             speed = 0.0
             turn = 0.0
             print('stop')
@@ -99,7 +112,6 @@ class SimpleDriving(rclpy.node.Node):
 
 
 def main(args=None):
-
     print('Hi from robotik_projekt.')
     rclpy.init(args=args)
 

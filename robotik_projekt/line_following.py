@@ -42,10 +42,10 @@ class LineFollowing(rclpy.node.Node):
         self.subscription  # prevent unused variable warning
 
         # create publisher for driving commands
-        self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 1)
+        self.publisher_ = self.create_publisher(Twist, 'line_following_twist', 1)
 
         # create timer to periodically invoke the driving logic
-        timer_period = 0.4  # seconds
+        timer_period = 0.5  # seconds
         self.my_timer = self.create_timer(timer_period, self.timer_callback)
 
     # handling received image data
