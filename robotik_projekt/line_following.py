@@ -2,16 +2,12 @@
 simple line following node
 """
 
+import cv2
 import rclpy
 import rclpy.node
-import cv2
-import numpy as np
-
-from std_msgs.msg import String
-from sensor_msgs.msg import LaserScan
+from cv_bridge import CvBridge
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import CompressedImage
-from cv_bridge import CvBridge, CvBridgeError
 
 
 class LineFollowing(rclpy.node.Node):
@@ -23,11 +19,11 @@ class LineFollowing(rclpy.node.Node):
         self.declare_parameter('boundary_left', 90)
         self.declare_parameter('boundary_right', 200)
         self.declare_parameter('threshold_line', 100)
-        self.declare_parameter('speed_drive', 0.1)
-        self.declare_parameter('speed_turn', 0.3)
+        self.declare_parameter('speed_drive', -0.05)
+        self.declare_parameter('speed_turn', 0.4)
 
         # position of brightes pixel in
-        self.lineposition = 0
+        self.lineposition = 640/2
 
         # init openCV-bridge
         self.bridge = CvBridge()
@@ -52,12 +48,11 @@ class LineFollowing(rclpy.node.Node):
         timer_period = 0.5  # seconds
         self.my_timer = self.create_timer(timer_period, self.timer_callback)
 
-
     # handling received image data
     def scanner_callback(self, data):
 
         # convert message to opencv image
-        img_cv = self.bridge.compressed_imgmsg_to_cv2(data, desired_encoding = 'passthrough')
+        img_cv = self.bridge.compressed_imgmsg_to_cv2(data, desired_encoding='passthrough')
 
         # convert image to grayscale
         img_gray = cv2.cvtColor(img_cv, cv2.COLOR_BGR2GRAY)
@@ -66,13 +61,19 @@ class LineFollowing(rclpy.node.Node):
         height, width = img_gray.shape[:2]
 
         # get the lowest row from image
-        img_row = img_gray[height-1,:]
-
+        img_row = img_gray[height - 1, :]
         # show image
         cv2.imshow("IMG", img_gray)
         cv2.imshow("IMG_ROW", img_row)
         cv2.waitKey(1)
 
+        self.lineposition = width / 2
+        brightness = 0
+        for x in range(len(img_row)):
+            if img_row[x] >= brightness:
+                brightness = img_row[x]
+                self.lineposition = x
+        print(self.lineposition)
 
     # driving logic
     def timer_callback(self):
@@ -83,9 +84,15 @@ class LineFollowing(rclpy.node.Node):
         speed_drive = self.get_parameter('speed_drive').get_parameter_value().double_value
         speed_turn = self.get_parameter('speed_turn').get_parameter_value().double_value
 
-        # todo logic
-        speed = 0.0
-        turn = 0.0
+        speed = speed_drive
+        turn = 0.0  # default linie mittig
+
+        if (self.lineposition > 640 / 3 * 2):
+            # linie rechts
+            turn = speed_turn * -1
+        elif self.lineposition < 640 / 3:
+            # linie links
+            turn = speed_turn * 1
 
         # create message
         msg = Twist()
@@ -97,7 +104,6 @@ class LineFollowing(rclpy.node.Node):
 
 
 def main(args=None):
-
     print('Hi from robotik_projekt line following.')
     rclpy.init(args=args)
 
