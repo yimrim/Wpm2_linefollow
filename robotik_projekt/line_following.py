@@ -1,8 +1,6 @@
 """
 simple line following node
 """
-from pty import spawn
-from ssl import socket_error
 
 import cv2
 import rclpy
@@ -10,7 +8,6 @@ import rclpy.node
 from cv_bridge import CvBridge
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import CompressedImage
-from six import print_
 
 
 class LineFollowing(rclpy.node.Node):
@@ -26,7 +23,7 @@ class LineFollowing(rclpy.node.Node):
         self.declare_parameter('speed_turn', 0.5)
 
         # position of brightes pixel in
-        self.lineposition = 640/2
+        self.lineposition = 640 / 2
 
         # init openCV-bridge
         self.bridge = CvBridge()
@@ -73,7 +70,7 @@ class LineFollowing(rclpy.node.Node):
         self.lineposition = width / 2
         brightness = 0
         for x in range(len(img_row)):
-            if x > 640/3 and x < (640/3)*2:
+            if x > 640 / 3 and x < (640 / 3) * 2:
                 if img_row[x] >= brightness:
                     brightness = img_row[x]
                     # print("index: " + str(x) + " brightness: " + str(brightness))
@@ -89,21 +86,19 @@ class LineFollowing(rclpy.node.Node):
         speed_drive = self.get_parameter('speed_drive').get_parameter_value().double_value
         speed_turn = self.get_parameter('speed_turn').get_parameter_value().double_value
 
-
-
         speed = speed_drive
         turn = 0.0  # default linie mittig
 
         if (self.lineposition > (640 / 3) * 2):
             # linie rechts
             turn = speed_turn * -1
-            speed = 0
+            speed = 0.0
         elif self.lineposition < 640 / 3:
             # linie links
             turn = speed_turn * 1
-            speed=0
+            speed = 0.0
         else:
-            turn = 0
+            turn = 0.0
             speed = speed_drive
 
         # create message
@@ -111,7 +106,7 @@ class LineFollowing(rclpy.node.Node):
         msg.linear.x = speed
         msg.angular.z = turn
 
-        print("speed: "+ str(speed))
+        print("speed: " + str(speed))
         print("turn: " + str(turn))
 
         # send message
