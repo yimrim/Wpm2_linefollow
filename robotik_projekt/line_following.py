@@ -45,7 +45,7 @@ class LineFollowing(rclpy.node.Node):
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 1)
 
         # create timer to periodically invoke the driving logic
-        timer_period = 0.2  # seconds
+        timer_period = 0.4  # seconds
         self.my_timer = self.create_timer(timer_period, self.timer_callback)
 
     # handling received image data
@@ -75,7 +75,7 @@ class LineFollowing(rclpy.node.Node):
                     brightness = img_row[x]
                     # print("index: " + str(x) + " brightness: " + str(brightness))
                     self.lineposition = x
-        print(self.lineposition)
+        # print(self.lineposition)
 
     # driving logic
     def timer_callback(self):
