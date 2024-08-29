@@ -70,7 +70,7 @@ class LineFollowing(rclpy.node.Node):
         self.lineposition = width / 2
         brightness = 0
         for x in range(len(img_row)):
-            if x > 640/3 or x < 640/2*3:
+            if x > 640/3 and x < 640/2*3:
                 if img_row[x] >= brightness:
                     brightness = img_row[x]
                     print("index: " + str(x) + " brightness: " + str(brightness))
