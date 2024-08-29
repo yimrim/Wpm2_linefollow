@@ -19,8 +19,8 @@ class LineFollowing(rclpy.node.Node):
         self.declare_parameter('boundary_left', 90)
         self.declare_parameter('boundary_right', 200)
         self.declare_parameter('threshold_line', 100)
-        self.declare_parameter('speed_drive', -0.1)
-        self.declare_parameter('speed_turn', 0.3)
+        self.declare_parameter('speed_drive', -0.13)
+        self.declare_parameter('speed_turn', 0.5)
 
         # position of brightes pixel in
         self.lineposition = 640 / 2
@@ -45,7 +45,7 @@ class LineFollowing(rclpy.node.Node):
         self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 1)
 
         # create timer to periodically invoke the driving logic
-        timer_period = 0.5  # seconds
+        timer_period = 0.2  # seconds
         self.my_timer = self.create_timer(timer_period, self.timer_callback)
 
     # handling received image data
@@ -70,7 +70,7 @@ class LineFollowing(rclpy.node.Node):
         self.lineposition = width / 2
         brightness = 0
         for x in range(len(img_row)):
-            if x > 100 and x < 640-100:
+            if x > 100 and x < 640 - 100:
                 if img_row[x] >= brightness:
                     brightness = img_row[x]
                     # print("index: " + str(x) + " brightness: " + str(brightness))
@@ -89,14 +89,14 @@ class LineFollowing(rclpy.node.Node):
         speed = speed_drive
         turn = 0.0  # default linie mittig
 
-        if (self.lineposition > (640/3)*2):
+        if (self.lineposition > (640 / 3) * 2):
             # linie rechts
             turn = speed_turn * -1
-            speed = 0.0
+            speed = speed_drive / 2
             print("rechts")
-        elif self.lineposition < 640/3:
+        elif self.lineposition < 640 / 3:
             turn = speed_turn * 1
-            speed = 0.0
+            speed = speed_drive / 2
             print("links")
         else:
             # linie mittig
