@@ -89,7 +89,7 @@ class LineFollowing(rclpy.node.Node):
         speed = speed_drive
         turn = 0.0  # default linie mittig
 
-        if (self.lineposition > 640 / 3 * 2):
+        if (self.lineposition > (640 / 3) * 2):
             # linie rechts
             turn = speed_turn * -1
         elif self.lineposition < 640 / 3:
