@@ -1,6 +1,8 @@
 """
 simple line following node
 """
+from pty import spawn
+from ssl import socket_error
 
 import cv2
 import rclpy
@@ -95,9 +97,14 @@ class LineFollowing(rclpy.node.Node):
         if (self.lineposition > (640 / 3) * 2):
             # linie rechts
             turn = speed_turn * -1
+            speed = 0
         elif self.lineposition < 640 / 3:
             # linie links
             turn = speed_turn * 1
+            speed=0
+        else:
+            turn = 0
+            speed = speed_drive
 
         # create message
         msg = Twist()
