@@ -8,6 +8,7 @@ import rclpy.node
 from cv_bridge import CvBridge
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import CompressedImage
+from six import print_
 
 
 class LineFollowing(rclpy.node.Node):
@@ -73,7 +74,7 @@ class LineFollowing(rclpy.node.Node):
             if x > 640/3 and x < (640/3)*2:
                 if img_row[x] >= brightness:
                     brightness = img_row[x]
-                    print("index: " + str(x) + " brightness: " + str(brightness))
+                    # print("index: " + str(x) + " brightness: " + str(brightness))
                     self.lineposition = x
         print(self.lineposition)
 
@@ -85,6 +86,8 @@ class LineFollowing(rclpy.node.Node):
         boundary_right = self.get_parameter('boundary_right').get_parameter_value().integer_value
         speed_drive = self.get_parameter('speed_drive').get_parameter_value().double_value
         speed_turn = self.get_parameter('speed_turn').get_parameter_value().double_value
+
+
 
         speed = speed_drive
         turn = 0.0  # default linie mittig
@@ -100,6 +103,9 @@ class LineFollowing(rclpy.node.Node):
         msg = Twist()
         msg.linear.x = speed
         msg.angular.z = turn
+
+        print("speed: "+ str(speed))
+        print("turn: " + str(turn))
 
         # send message
         self.publisher_.publish(msg)
