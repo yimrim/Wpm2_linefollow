@@ -8,7 +8,6 @@ import rclpy.node
 from cv_bridge import CvBridge
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import CompressedImage
-from urllib3.packages.six import print_
 
 
 class LineFollowing(rclpy.node.Node):
