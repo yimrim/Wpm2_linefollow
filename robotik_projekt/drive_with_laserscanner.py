@@ -75,6 +75,13 @@ class SimpleDriving(rclpy.node.Node):
         distance_turn = self.get_parameter('distance_to_turn').get_parameter_value().double_value
         distance_stop = self.get_parameter('distance_to_stop').get_parameter_value().double_value
 
+
+
+
+
+
+
+
         # no or far away obstacle
         if (self.last_distance == 0.0) or (self.last_distance > distance_slow):
             self.normal_drive = True
@@ -100,6 +107,8 @@ class SimpleDriving(rclpy.node.Node):
             speed = 0.0
             turn = 0.0
             print('stop')
+
+
 
         if(not self.normal_drive):
             # create message
