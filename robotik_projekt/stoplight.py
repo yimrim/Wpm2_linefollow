@@ -53,10 +53,8 @@ class Stoplight(rclpy.node.Node):
         cv2.imshow('frame', img_cv)
         cv2.imshow('mask', mask)
         cv2.imshow('res', res)
-        # Break the loop if 'q' is pressed
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
 
+        cv2.waitKey(1)
 
 def main(args=None):
     print('Hi from robotik_projekt line following.')
