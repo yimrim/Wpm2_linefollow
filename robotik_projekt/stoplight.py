@@ -3,6 +3,7 @@ import numpy as np
 import rclpy
 import rclpy.node
 from cv_bridge import CvBridge
+from numpy import count_nonzero
 from sensor_msgs.msg import CompressedImage
 
 
@@ -18,6 +19,7 @@ class Stoplight(rclpy.node.Node):
         self.declare_parameter('upper_saturation', 255)
         self.declare_parameter('lower_value', 200)
         self.declare_parameter('upper_value', 255)
+        self.declare_parameter('activated_threshold', 100)
 
         # init openCV-bridge
         self.bridge = CvBridge()
@@ -50,12 +52,18 @@ class Stoplight(rclpy.node.Node):
         u_sat = self.get_parameter('upper_saturation').value
         l_val = self.get_parameter('lower_value').value
         u_val = self.get_parameter('upper_value').value
+        threshold = self.get_parameter('activated_threshold').value
 
         lower = np.array([l_hue, l_sat, l_val])
         upper = np.array([u_hue, u_sat, u_val])
 
         mask = cv2.inRange(hsv, lower, upper)
-        print("Pixelcount: " + str(cv2.countNonZero(mask)))
+        count = str(cv2.countNonZero(mask))
+
+        if cv2.countNonZero(mask) >= threshold:
+            print("Ampel Grün (" + count + ")")
+        else:
+            print("Ampel nicht Grün!!! (" + count + ")")
 
         # Bitwise-AND mask and original image
         res = cv2.bitwise_and(img_cv, img_cv, mask=mask)
