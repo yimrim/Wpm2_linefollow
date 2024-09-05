@@ -42,8 +42,8 @@ class Stoplight(rclpy.node.Node):
         hsv = cv2.cvtColor(img_cv, cv2.COLOR_BGR2HSV)
 
         # Threshold the HSV image to get only hue colors
-        lower_hue = np.array([100, 50, 50])
-        upper_hue = np.array([120, 255, 255])
+        lower_hue = np.array([100, 180, 50])
+        upper_hue = np.array([110, 255, 255])
         mask = cv2.inRange(hsv, lower_hue, upper_hue)
 
         # Bitwise-AND mask and original image
