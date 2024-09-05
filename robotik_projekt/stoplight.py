@@ -12,11 +12,11 @@ class Stoplight(rclpy.node.Node):
         super().__init__('stoplight')
 
         # definition of the parameters that can be changed at runtime
-        self.declare_parameter('lower_hue', 0)
-        self.declare_parameter('upper_hue', 10)
-        self.declare_parameter('lower_saturation', 50)
+        self.declare_parameter('lower_hue', 80)
+        self.declare_parameter('upper_hue', 90)
+        self.declare_parameter('lower_saturation', 100)
         self.declare_parameter('upper_saturation', 255)
-        self.declare_parameter('lower_value', 50)
+        self.declare_parameter('lower_value', 200)
         self.declare_parameter('upper_value', 255)
 
         # init openCV-bridge
@@ -55,6 +55,7 @@ class Stoplight(rclpy.node.Node):
         upper = np.array([u_hue, u_sat, u_val])
 
         mask = cv2.inRange(hsv, lower, upper)
+        print("Pixelcount: " + cv2.countNonZero(mask))
 
         # Bitwise-AND mask and original image
         res = cv2.bitwise_and(img_cv, img_cv, mask=mask)
