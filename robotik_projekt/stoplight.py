@@ -12,10 +12,12 @@ class Stoplight(rclpy.node.Node):
         super().__init__('stoplight')
 
         # definition of the parameters that can be changed at runtime
-        self.declare_parameter('lower_hue', 80)
-        self.declare_parameter('upper_hue', 140)
-        self.declare_parameter('saturation', 50)
-        self.declare_parameter('value', 50)
+        self.declare_parameter('lower_hue', 0)
+        self.declare_parameter('upper_hue', 10)
+        self.declare_parameter('lower_saturation', 50)
+        self.declare_parameter('upper_saturation', 255)
+        self.declare_parameter('lower_value', 50)
+        self.declare_parameter('upper_value', 255)
 
         # init openCV-bridge
         self.bridge = CvBridge()
@@ -42,13 +44,17 @@ class Stoplight(rclpy.node.Node):
         hsv = cv2.cvtColor(img_cv, cv2.COLOR_BGR2HSV)
 
         # Threshold the HSV image to get only hue colors
-        lower_hue = np.array([100, 180, 50])
-        upper_hue = np.array([110, 255, 255])
+        l_hue = self.get_parameter('lower_hue').value
+        u_hue = self.get_parameter('upper_hue').value
+        l_sat = self.get_parameter('lower_saturation').value
+        u_sat = self.get_parameter('upper_saturation').value
+        l_val = self.get_parameter('lower_value').value
+        u_val = self.get_parameter('upper_value').value
 
-        lower_red = np.array([0, 50, 50])
-        upper_red = np.array([10, 255, 255])
+        lower = np.array([l_hue, l_sat, l_val])
+        upper = np.array([u_hue, u_sat, u_val])
 
-        mask = cv2.inRange(hsv, lower_red, upper_red)
+        mask = cv2.inRange(hsv, lower, upper)
 
         # Bitwise-AND mask and original image
         res = cv2.bitwise_and(img_cv, img_cv, mask=mask)
