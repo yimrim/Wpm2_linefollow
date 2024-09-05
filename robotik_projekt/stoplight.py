@@ -55,7 +55,7 @@ class Stoplight(rclpy.node.Node):
         upper = np.array([u_hue, u_sat, u_val])
 
         mask = cv2.inRange(hsv, lower, upper)
-        print("Pixelcount: " + cv2.countNonZero(mask))
+        print("Pixelcount: " + str(cv2.countNonZero(mask)))
 
         # Bitwise-AND mask and original image
         res = cv2.bitwise_and(img_cv, img_cv, mask=mask)
