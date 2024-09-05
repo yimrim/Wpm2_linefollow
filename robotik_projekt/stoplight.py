@@ -76,7 +76,7 @@ class Stoplight(rclpy.node.Node):
         cv2.waitKey(1)
 
 def main(args=None):
-    print('Hi from robotik_projekt line following.')
+    print('Hi from robotik_projekt stoplight.')
     rclpy.init(args=args)
 
     node = Stoplight()
