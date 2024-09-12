@@ -83,36 +83,36 @@ class LineFollowing(rclpy.node.Node):
         # caching the parameters for reasons of clarity
         boundary_left = self.get_parameter('boundary_left').get_parameter_value().integer_value
         boundary_right = self.get_parameter('boundary_right').get_parameter_value().integer_value
-        speed_drive = self.get_parameter('speed_drive').get_parameter_value().double_value
+
+        if (self.lineposition > (640 / 3) * 2):
+            self.drive("right")
+        elif self.lineposition < 640 / 3:
+            self.drive("left")
+        else:
+            self.drive("forward")
+
+
+
+    def drive(self, direction):
         speed_turn = self.get_parameter('speed_turn').get_parameter_value().double_value
 
+        msg = Twist()
+        speed_drive = self.get_parameter('speed_drive').get_parameter_value().double_value
         speed = speed_drive
         turn = 0.0  # default linie mittig
 
-        if (self.lineposition > (640 / 3) * 2):
-            # linie rechts
-            turn = speed_turn * -1
-            speed = 0.0
-            print("rechts")
-        elif self.lineposition < 640 / 3:
+        if direction == 'left':
             turn = speed_turn * 1
             speed = 0.0
-            print("links")
-        else:
-            # linie mittig
-            turn = 0.0
-            speed = speed_drive
-            print("gerade")
+        elif direction == 'right':
+            turn = speed_turn * -1
+            speed = 0.0
+        elif direction == 'forward':
+            turn = 0.00
+            speed = speed_drive * 1
 
-        # create message
-        msg = Twist()
         msg.linear.x = speed
         msg.angular.z = turn
-
-        # print("speed: " + str(speed))
-        # print("turn: " + str(turn))
-
-        # send message
         self.publisher_.publish(msg)
 
 
