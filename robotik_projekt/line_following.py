@@ -16,14 +16,15 @@ class LineFollowing(rclpy.node.Node):
         super().__init__('line_following')
 
         # definition of the parameters that can be changed at runtime
-        self.declare_parameter('boundary_left', 90)
-        self.declare_parameter('boundary_right', 200)
-        self.declare_parameter('threshold_line', 100)
+        self.declare_parameter('boundary_left', 500)
+        self.declare_parameter('boundary_right', 600)
         self.declare_parameter('speed_drive', -0.05)
         self.declare_parameter('speed_turn', 0.5)
-        self.declare_parameter('height_offset', 40)
+        self.declare_parameter('height_offset', 50)
+        self.declare_parameter('left_image_cut', 320)
+        self.declare_parameter('right_image_cut', 5)
 
-        # position of brightes pixel in
+        # position of brightest pixel in
         self.lineposition = 640 / 2
 
         # init openCV-bridge
@@ -55,6 +56,9 @@ class LineFollowing(rclpy.node.Node):
         boundary_left = self.get_parameter('boundary_left').get_parameter_value().integer_value
         boundary_right = self.get_parameter('boundary_right').get_parameter_value().integer_value
         height_offset = self.get_parameter('height_offset').get_parameter_value().integer_value
+        left_image_cut = self.get_parameter('left_image_cut').get_parameter_value().integer_value
+        right_image_cut = self.get_parameter('right_image_cut').get_parameter_value().integer_value
+
 
         # convert message to opencv image
         img_cv = self.bridge.compressed_imgmsg_to_cv2(data, desired_encoding='passthrough')
@@ -84,14 +88,14 @@ class LineFollowing(rclpy.node.Node):
         self.lineposition = width / 2
         brightness = 0
         for x in range(len(img_row)):
-            if x > 100 and x < 640 - 100:
+            if x > left_image_cut and x < 640 - right_image_cut:
                 if img_row[x] >= brightness:
                     brightness = img_row[x]
                     # print("index: " + str(x) + " brightness: " + str(brightness))
                     self.lineposition = x
         # print(self.lineposition)
 
-        cv2.circle(img_gray, (self.lineposition, offset), radius, color, thickness)
+        cv2.circle(img_gray, (self.lineposition, offset), 2 * radius, color, thickness)
 
         # show image
         cv2.imshow("IMG", img_gray)
