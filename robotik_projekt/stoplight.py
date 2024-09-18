@@ -19,7 +19,7 @@ class Stoplight(rclpy.node.Node):
         self.declare_parameter('upper_saturation', 255)
         self.declare_parameter('lower_value', 200)
         self.declare_parameter('upper_value', 255)
-        self.declare_parameter('activated_threshold', 100)
+        self.declare_parameter('activated_threshold', 20)
 
         # init openCV-bridge
         self.bridge = CvBridge()
