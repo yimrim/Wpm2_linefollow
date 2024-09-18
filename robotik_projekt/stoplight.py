@@ -4,7 +4,7 @@ import rclpy
 import rclpy.node
 from cv_bridge import CvBridge
 from sensor_msgs.msg import CompressedImage
-from std_msgs import Bool
+from std_msgs.msg import Bool
 
 
 class Stoplight(rclpy.node.Node):
@@ -61,12 +61,15 @@ class Stoplight(rclpy.node.Node):
         mask = cv2.inRange(hsv, lower, upper)
         count = str(cv2.countNonZero(mask))
 
+        msg = Bool()
         if cv2.countNonZero(mask) >= threshold:
             print("Ampel Grün (" + count + ")")
-            self.publisher_.publish(True)
+            msg.data = True
+            self.publisher_.publish(msg)
         else:
             print("Ampel nicht Grün!!! (" + count + ")")
-            self.publisher_.publish(False)
+            msg.data = False
+            self.publisher_.publish(msg)
 
         # Bitwise-AND mask and original image
         res = cv2.bitwise_and(img_cv, img_cv, mask=mask)

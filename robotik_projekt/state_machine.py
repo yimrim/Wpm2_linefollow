@@ -1,7 +1,7 @@
 import rclpy
 import rclpy.node
 from geometry_msgs.msg import Twist
-from std_msgs import Bool
+from std_msgs.msg import Bool
 
 from states import States
 
