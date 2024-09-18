@@ -17,7 +17,7 @@ def generate_launch_description():
         Node(
             package='robotik_projekt',
             executable='stoplight',
-            output='screen',
+            output='log',
             emulate_tty=True,
             arguments=['__log_level:=debug']
         ),
