@@ -21,6 +21,7 @@ class LineFollowing(rclpy.node.Node):
         self.declare_parameter('threshold_line', 100)
         self.declare_parameter('speed_drive', -0.05)
         self.declare_parameter('speed_turn', 0.5)
+        self.declare_parameter('height_offset', 40)
 
         # position of brightes pixel in
         self.lineposition = 640 / 2
@@ -50,6 +51,10 @@ class LineFollowing(rclpy.node.Node):
 
     # handling received image data
     def scanner_callback(self, data):
+        # caching the parameters for reasons of clarity
+        boundary_left = self.get_parameter('boundary_left').get_parameter_value().integer_value
+        boundary_right = self.get_parameter('boundary_right').get_parameter_value().integer_value
+        height_offset = self.get_parameter('height_offset').get_parameter_value().integer_value
 
         # convert message to opencv image
         img_cv = self.bridge.compressed_imgmsg_to_cv2(data, desired_encoding='passthrough')
@@ -60,12 +65,21 @@ class LineFollowing(rclpy.node.Node):
         # get image size
         height, width = img_gray.shape[:2]
 
+        #helping points
+        offset = height-height_offset
+        point1 = (boundary_left, offset)
+        point2 = (boundary_right, offset)
+
+        #circle props
+        radius = 5
+        color = (255,0,0)
+        thickness = 2
+
+        cv2.circle(img_gray, point1, radius, color, thickness)
+        cv2.circle(img_gray, point2, radius, color, thickness)
+
         # get the lowest row from image
-        img_row = img_gray[height - 1, :]
-        # show image
-        cv2.imshow("IMG", img_gray)
-        cv2.imshow("IMG_ROW", img_row)
-        cv2.waitKey(1)
+        img_row = img_gray[height - height_offset, :]
 
         self.lineposition = width / 2
         brightness = 0
@@ -77,6 +91,13 @@ class LineFollowing(rclpy.node.Node):
                     self.lineposition = x
         # print(self.lineposition)
 
+        cv2.circle(img_gray, (self.lineposition, offset), radius, color, thickness)
+
+        # show image
+        cv2.imshow("IMG", img_gray)
+        cv2.imshow("IMG_ROW", img_row)
+        cv2.waitKey(1)
+
     # driving logic
     def timer_callback(self):
 
@@ -84,12 +105,12 @@ class LineFollowing(rclpy.node.Node):
         boundary_left = self.get_parameter('boundary_left').get_parameter_value().integer_value
         boundary_right = self.get_parameter('boundary_right').get_parameter_value().integer_value
 
-        if (self.lineposition > (640 / 3) * 2):
-            self.drive("right")
-        elif self.lineposition < 640 / 3:
-            self.drive("left")
+        if (self.lineposition > boundary_right):
+            self.drive('right')
+        elif self.lineposition < boundary_left:
+            self.drive('left')
         else:
-            self.drive("forward")
+            self.drive('forward')
 
 
 
@@ -110,6 +131,8 @@ class LineFollowing(rclpy.node.Node):
         elif direction == 'forward':
             turn = 0.00
             speed = speed_drive * 1
+        
+        print(direction)
 
         msg.linear.x = speed
         msg.angular.z = turn

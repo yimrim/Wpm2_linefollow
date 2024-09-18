@@ -38,10 +38,13 @@ class StateMachine(rclpy.node.Node):
         #################################### State machine todo legal state switches
         if self.state == States.INIT:
             #todo check if stoplight is green
+            print("test")
         elif self.state == States.LINE_FOLLOWING:
             #todo check if obstacle is detected or not, forward driving command
+            print("test2")
         elif self.state == States.OBSTACLE:
             #todo obstacle routine
+            print("test3")
 
 
 
@@ -49,6 +52,7 @@ class StateMachine(rclpy.node.Node):
 
         # send driving message #todo
         # create message
+        #print("test3")
         msg = Twist()
         msg.linear.x = speed
         msg.angular.z = turn
