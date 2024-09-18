@@ -11,9 +11,9 @@ def generate_launch_description():
             output='screen',
             emulate_tty=True,
             arguments=[('__log_level:=debug')],
-            #remappings=[
-             #   ('/line_following_twist', '/cmd_vel')
-            #],
+            remappings=[
+               ('/line_following_twist', '/cmd_vel')
+            ],
             # parameters=[
             #     {'boundary_left': 92},
             #     {'boundary_right': 198},
