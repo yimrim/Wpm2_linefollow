@@ -3,7 +3,6 @@ import numpy as np
 import rclpy
 import rclpy.node
 from cv_bridge import CvBridge
-from numpy import count_nonzero
 from sensor_msgs.msg import CompressedImage
 
 

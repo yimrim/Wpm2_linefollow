@@ -25,8 +25,8 @@ setup(
         'console_scripts': [
             'drive_with_laserscanner = robotik_projekt.drive_with_laserscanner:main',
             'line_following = robotik_projekt.line_following:main',
-            'stoplight = robotik_projekt.stoplight:main'
-            'state_machine = robotik_projekt.state_machine:main'
+            'stoplight = robotik_projekt.stoplight:main',
+            'state_machine = robotik_projekt.state_machine:main',
         ],
     },
 )
