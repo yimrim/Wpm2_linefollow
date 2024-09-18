@@ -29,7 +29,7 @@ class StateMachine(rclpy.node.Node):
         # stoplight subscriber
         self.stoplight_subscription = self.create_subscription(Bool, 'stoplight', self.stoplight_callback, qos_profile=qos_policy)
         # line_following node subscriber
-        self.line_following_subscription = self.create_subscription(Twist, 'line_following_twist', qos_profile=qos_policy)
+        self.line_following_subscription = self.create_subscription(Twist, 'line_following_twist', self.line_following_callback, qos_profile=qos_policy)
 
         # create publisher for driving commands
         self.driving_publisher = self.create_publisher(Twist, 'cmd_vel', 1)
