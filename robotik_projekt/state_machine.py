@@ -3,8 +3,12 @@ import rclpy.node
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Bool
 
-from states import States
+from enum import Enum
 
+class States(Enum):
+    INIT = 0
+    LINE_FOLLOWING = 1
+    OBSTACLE = 2
 
 class StateMachine(rclpy.node.Node):
 
