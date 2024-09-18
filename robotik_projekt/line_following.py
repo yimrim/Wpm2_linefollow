@@ -79,9 +79,6 @@ class LineFollowing(rclpy.node.Node):
         color = (255,0,0)
         thickness = 2
 
-        cv2.circle(img_gray, point1, radius, color, thickness)
-        cv2.circle(img_gray, point2, radius, color, thickness)
-
         # get the lowest row from image
         img_row = img_gray[height - height_offset, :]
 
@@ -94,6 +91,9 @@ class LineFollowing(rclpy.node.Node):
                     # print("index: " + str(x) + " brightness: " + str(brightness))
                     self.lineposition = x
         # print(self.lineposition)
+
+        cv2.circle(img_gray, point1, radius, color, thickness)
+        cv2.circle(img_gray, point2, radius, color, thickness)
 
         cv2.circle(img_gray, (self.lineposition, offset), 2 * radius, color, thickness)
 
