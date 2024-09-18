@@ -4,6 +4,7 @@ import rclpy
 import rclpy.node
 from cv_bridge import CvBridge
 from sensor_msgs.msg import CompressedImage
+from std_msgs import Bool
 
 
 class Stoplight(rclpy.node.Node):
@@ -27,6 +28,7 @@ class Stoplight(rclpy.node.Node):
         qos_policy = rclpy.qos.QoSProfile(reliability=rclpy.qos.ReliabilityPolicy.BEST_EFFORT,
                                           history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                                           depth=1)
+        self.publisher_ = self.create_publisher(Bool, 'stoplight', False)
 
         # create subscribers for image data with changed qos
         self.subscription = self.create_subscription(
@@ -61,8 +63,10 @@ class Stoplight(rclpy.node.Node):
 
         if cv2.countNonZero(mask) >= threshold:
             print("Ampel Grün (" + count + ")")
+            self.publisher_.publish(True)
         else:
             print("Ampel nicht Grün!!! (" + count + ")")
+            self.publisher_.publish(False)
 
         # Bitwise-AND mask and original image
         res = cv2.bitwise_and(img_cv, img_cv, mask=mask)
