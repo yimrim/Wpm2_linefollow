@@ -13,15 +13,22 @@ def generate_launch_description():
             emulate_tty=True,
             arguments=['__log_level:=debug']
         ),
-
-        # Hindernisvermeidungs-Node mit Laserscanner
+        # Ampelerkennung
         Node(
             package='robotik_projekt',
-            executable='drive_with_laserscanner',
+            executable='stoplight',
             output='screen',
             emulate_tty=True,
-            arguments=['__log_level:=debug'],
+            arguments=['__log_level:=debug']
         ),
+        # Hindernisvermeidungs-Node mit Laserscanner
+        # Node(
+        #     package='robotik_projekt',
+        #     executable='drive_with_laserscanner',
+        #     output='screen',
+        #     emulate_tty=True,
+        #     arguments=['__log_level:=debug'],
+        # ),
         # State Machine Kontrollnode
         Node(
             package='robotik_projekt',
