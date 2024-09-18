@@ -43,8 +43,11 @@ class Stoplight(rclpy.node.Node):
         # convert message to opencv image
         img_cv = self.bridge.compressed_imgmsg_to_cv2(data, desired_encoding='passthrough')
 
+        # Crop the image to the middle-right field (426,160) to (640,320)
+        cropped_img = img_cv[160:320, 426:640]
+
         # convert image to hsv
-        hsv = cv2.cvtColor(img_cv, cv2.COLOR_BGR2HSV)
+        hsv = cv2.cvtColor(cropped_img, cv2.COLOR_BGR2HSV)
 
         # Threshold the HSV image to get only hue colors
         l_hue = self.get_parameter('lower_hue').value
@@ -72,10 +75,10 @@ class Stoplight(rclpy.node.Node):
             self.publisher_.publish(msg)
 
         # Bitwise-AND mask and original image
-        res = cv2.bitwise_and(img_cv, img_cv, mask=mask)
+        res = cv2.bitwise_and(cropped_img, cropped_img, mask=mask)
 
         # Display the frame
-        cv2.imshow('frame', img_cv)
+        cv2.imshow('frame', cropped_img)
         cv2.imshow('mask', mask)
         cv2.imshow('res', res)
 
