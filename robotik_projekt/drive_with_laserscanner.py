@@ -32,8 +32,8 @@ class SimpleDriving(rclpy.node.Node):
         self.declare_parameter('distance_to_stop', 0.3)
         self.declare_parameter('speed_turn', 0.4)
         self.declare_parameter('speed_drive', -0.05)
-        self.declare_parameter('timeout_turn', 3)
-        self.declare_parameter('timeout_drive', 4)
+        self.declare_parameter('timeout_turn', 4)
+        self.declare_parameter('timeout_drive', 6.5)
         self.declare_parameter('laserscan_beam_to_use', 0)
 
         # variable for the last sensor reading
@@ -94,7 +94,7 @@ class SimpleDriving(rclpy.node.Node):
                 self.drive_publisher.publish(msg)
                 self.obstacle_state = AvoidanceStates.OBSTACLE_IN_FRONT
         elif self.obstacle_state == AvoidanceStates.OBSTACLE_IN_FRONT:
-            msg.angular.z = -speed_turn
+            msg.angular.z = speed_turn
             self.drive_publisher.publish(msg)
             time.sleep(timeout_turn)
             msg.angular.z = 0.0
@@ -108,7 +108,7 @@ class SimpleDriving(rclpy.node.Node):
             self.drive_publisher.publish(msg)
             self.obstacle_state = AvoidanceStates.TURNING_RIGHT
         elif self.obstacle_state == AvoidanceStates.TURNING_RIGHT:
-            msg.angular.z = speed_turn
+            msg.angular.z = -speed_turn
             self.drive_publisher.publish(msg)
             time.sleep(timeout_turn)
             msg.angular.z = 0.0
@@ -122,7 +122,7 @@ class SimpleDriving(rclpy.node.Node):
             self.drive_publisher.publish(msg)
             self.obstacle_state = AvoidanceStates.REARRANGE_RIGHT
         elif self.obstacle_state == AvoidanceStates.REARRANGE_RIGHT:
-            msg.angular.z = speed_turn
+            msg.angular.z = -speed_turn
             self.drive_publisher.publish(msg)
             time.sleep(timeout_turn)
             msg.angular.z = 0.0
@@ -136,7 +136,7 @@ class SimpleDriving(rclpy.node.Node):
             self.drive_publisher.publish(msg)
             self.obstacle_state = AvoidanceStates.REARRANGE_LEFT
         elif self.obstacle_state == AvoidanceStates.REARRANGE_LEFT:
-            msg.angular.z = -speed_turn
+            msg.angular.z = speed_turn
             self.drive_publisher.publish(msg)
             time.sleep(timeout_turn)
             msg.angular.z = 0.0
