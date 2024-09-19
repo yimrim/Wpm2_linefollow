@@ -117,7 +117,7 @@ class SimpleDriving(rclpy.node.Node):
         elif self.obstacle_state == AvoidanceStates.PASS_OBSTACLE:
             msg.linear.x = speed_drive
             self.drive_publisher.publish(msg)
-            time.sleep(timeout_drive)
+            time.sleep(2 * timeout_drive)
             msg.linear.x = 0.0
             self.drive_publisher.publish(msg)
             self.obstacle_state = AvoidanceStates.REARRANGE_RIGHT
