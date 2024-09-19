@@ -47,7 +47,7 @@ class StateMachine(rclpy.node.Node):
                 self.state = States.LINE_FOLLOWING
         elif self.state == States.LINE_FOLLOWING:
 
-            #todo check if obstacle is detected or not, forward driving command
+
             print("Line Following")
         elif self.state == States.OBSTACLE:
             #todo obstacle routine
