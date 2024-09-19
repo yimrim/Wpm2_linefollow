@@ -14,6 +14,7 @@ class SimpleDriving(rclpy.node.Node):
 
         # definition of the parameters that can be changed at runtime
         self.declare_parameter('distance_to_stop', 0.3)
+        self.declare_parameter('laserscan_beam_to_use', 0)
 
         # variable for the last sensor reading
         self.last_distance = 0.0
