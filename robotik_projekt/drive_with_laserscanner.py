@@ -78,6 +78,8 @@ class SimpleDriving(rclpy.node.Node):
         timeout_turn = self.get_parameter('timeout_turn').get_parameter_value().integer_value
         timeout_drive = self.get_parameter('timeout_drive').get_parameter_value().integer_value
 
+        print(self.obstacle_state)
+
 
         msg = Twist()
         if self.obstacle_state == AvoidanceStates.NO_OBSTACLE:
