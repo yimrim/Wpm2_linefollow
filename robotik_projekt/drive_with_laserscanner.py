@@ -32,8 +32,8 @@ class SimpleDriving(rclpy.node.Node):
         self.declare_parameter('distance_to_stop', 0.3)
         self.declare_parameter('speed_turn', 0.4)
         self.declare_parameter('speed_drive', -0.05)
-        self.declare_parameter('timeout_turn', 4)
-        self.declare_parameter('timeout_drive', 6)
+        self.declare_parameter('timeout_turn', 4.0)
+        self.declare_parameter('timeout_drive', 6.0)
         self.declare_parameter('laserscan_beam_to_use', 0)
 
         # variable for the last sensor reading
