@@ -75,8 +75,8 @@ class SimpleDriving(rclpy.node.Node):
         distance_stop = self.get_parameter('distance_to_stop').get_parameter_value().double_value
         speed_turn = self.get_parameter('speed_turn').get_parameter_value().double_value
         speed_drive = self.get_parameter('speed_drive').get_parameter_value().double_value
-        timeout_turn = self.get_parameter('timeout_turn').get_parameter_value().integer_value
-        timeout_drive = self.get_parameter('timeout_drive').get_parameter_value().integer_value
+        timeout_turn = self.get_parameter('timeout_turn').get_parameter_value().double_value
+        timeout_drive = self.get_parameter('timeout_drive').get_parameter_value().double_value
 
         print(self.obstacle_state)
 
