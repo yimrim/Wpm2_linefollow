@@ -27,6 +27,7 @@ setup(
             'line_following = robotik_projekt.line_following:main',
             'stoplight = robotik_projekt.stoplight:main',
             'state_machine = robotik_projekt.state_machine:main',
+            'laserscanner_debug = robotik_projekt.laserscanner_debug:main',
         ],
     },
 )
