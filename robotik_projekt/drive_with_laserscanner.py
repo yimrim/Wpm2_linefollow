@@ -56,7 +56,7 @@ class SimpleDriving(rclpy.node.Node):
         self.subscription  # prevent unused variable warning
 
         # create publisher for driving commands
-        self.drive_publisher = self.create_publisher(Twist, 'cmd_vel', 1)
+        self.drive_publisher = self.create_publisher(Twist, '/cmd_vel', 1)
 
         # create timer to periodically invoke the driving logic
         timer_period = 0.5  # seconds
@@ -82,6 +82,8 @@ class SimpleDriving(rclpy.node.Node):
 
 
         msg = Twist()
+        msg.linear.x = 0.0
+        msg.angular.y = 0.0
         if self.obstacle_state == AvoidanceStates.NO_OBSTACLE:
 
             if self.last_distance > distance_stop:
