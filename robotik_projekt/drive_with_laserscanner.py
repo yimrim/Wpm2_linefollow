@@ -21,7 +21,7 @@ class AvoidanceStates(Enum):
     PASS_OBSTACLE = 6,
     REARRANGE_RIGHT = 7,
     REARRANGE_IN_FRONT = 8,
-    REARRANGE_LEFT = 8,
+    REARRANGE_LEFT = 9,
 
 class SimpleDriving(rclpy.node.Node):
 
