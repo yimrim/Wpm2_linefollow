@@ -9,6 +9,7 @@ import rclpy
 import rclpy.node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
+from enum import Enum
 
 class AvoidanceStates(Enum):
     NO_OBSTACLE = 0,
