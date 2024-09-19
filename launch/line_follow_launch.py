@@ -14,10 +14,8 @@ def generate_launch_description():
             remappings=[
                ('/line_following_twist', '/cmd_vel')
             ],
-            # parameters=[
-            #     {'boundary_left': 92},
-            #     {'boundary_right': 198},
-            #     {'threshold_line': 102}
-            # ]
+            parameters=[
+                {'grey_threshold': 64}
+            ]
         ),
     ])

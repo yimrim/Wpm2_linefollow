@@ -1,5 +1,5 @@
 """
-simple line following node
+line following with gray line on white background
 """
 
 import cv2
@@ -23,6 +23,7 @@ class LineFollowing(rclpy.node.Node):
         self.declare_parameter('height_offset', 50)
         self.declare_parameter('left_image_cut', 320)
         self.declare_parameter('right_image_cut', 5)
+        self.declare_parameter('gray_threshold', 128)  # new parameter for adjustable gray tone
 
         # position of brightest pixel in
         self.lineposition = 640 / 2
@@ -58,7 +59,7 @@ class LineFollowing(rclpy.node.Node):
         height_offset = self.get_parameter('height_offset').get_parameter_value().integer_value
         left_image_cut = self.get_parameter('left_image_cut').get_parameter_value().integer_value
         right_image_cut = self.get_parameter('right_image_cut').get_parameter_value().integer_value
-
+        gray_threshold = self.get_parameter('gray_threshold').get_parameter_value().integer_value  # fetch gray threshold
 
         # convert message to opencv image
         img_cv = self.bridge.compressed_imgmsg_to_cv2(data, desired_encoding='passthrough')
@@ -69,32 +70,31 @@ class LineFollowing(rclpy.node.Node):
         # get image size
         height, width = img_gray.shape[:2]
 
-        #helping points
-        offset = height-height_offset
+        # helping points
+        offset = height - height_offset
         point1 = (boundary_left, offset)
         point2 = (boundary_right, offset)
 
-        #circle props
+        # circle props
         radius = 5
-        color = (255,0,0)
+        color = (255, 0, 0)
         thickness = 2
 
-        # get the lowest row from image
+        # get the lowest row from the image
         img_row = img_gray[height - height_offset, :]
 
         self.lineposition = width / 2
-        brightness = 0
+        best_match = 255  # start with white as the "worst" match
+
         for x in range(len(img_row)):
-            if x > left_image_cut and x < 640 - right_image_cut:
-                if img_row[x] >= brightness + 5:
-                    brightness = img_row[x]
-                    # print("index: " + str(x) + " brightness: " + str(brightness))
+            if left_image_cut < x < 640 - right_image_cut:
+                pixel_value = img_row[x]
+                if abs(pixel_value - gray_threshold) < abs(best_match - gray_threshold):
+                    best_match = pixel_value
                     self.lineposition = x
-        # print(self.lineposition)
 
         cv2.circle(img_gray, point1, radius, color, thickness)
         cv2.circle(img_gray, point2, radius, color, thickness)
-
         cv2.circle(img_gray, (self.lineposition, offset), 2 * radius, color, thickness)
 
         # show image
@@ -109,14 +109,12 @@ class LineFollowing(rclpy.node.Node):
         boundary_left = self.get_parameter('boundary_left').get_parameter_value().integer_value
         boundary_right = self.get_parameter('boundary_right').get_parameter_value().integer_value
 
-        if (self.lineposition > boundary_right):
+        if self.lineposition > boundary_right:
             self.drive('right')
         elif self.lineposition < boundary_left:
             self.drive('left')
         else:
             self.drive('forward')
-
-
 
     def drive(self, direction):
         speed_turn = self.get_parameter('speed_turn').get_parameter_value().double_value
@@ -124,7 +122,7 @@ class LineFollowing(rclpy.node.Node):
         msg = Twist()
         speed_drive = self.get_parameter('speed_drive').get_parameter_value().double_value
         speed = speed_drive
-        turn = 0.0  # default linie mittig
+        turn = 0.0  # default line is in the middle
 
         if direction == 'left':
             turn = speed_turn * 1
