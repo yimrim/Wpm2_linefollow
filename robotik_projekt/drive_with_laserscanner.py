@@ -40,7 +40,7 @@ class SimpleDriving(rclpy.node.Node):
         self.last_distance = 0.0
 
         # initialize state
-        self.obstacle_state = AvoidanceStates.NO_OBSTACLE,
+        self.obstacle_state = AvoidanceStates.NO_OBSTACLE
 
         # definition of the QoS in order to receive data despite WiFi
         qos_policy = rclpy.qos.QoSProfile(reliability=rclpy.qos.ReliabilityPolicy.BEST_EFFORT,
