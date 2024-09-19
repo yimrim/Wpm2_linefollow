@@ -14,8 +14,8 @@ def generate_launch_description():
             remappings=[
                ('/line_following_twist', '/cmd_vel')
             ],
-            parameters=[
-                {'grey_threshold': 64}
-            ]
+            # parameters=[
+            #     {'grey_threshold': 64}
+            # ]
         ),
     ])

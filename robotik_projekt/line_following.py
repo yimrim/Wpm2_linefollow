@@ -23,7 +23,7 @@ class LineFollowing(rclpy.node.Node):
         self.declare_parameter('height_offset', 50)
         self.declare_parameter('left_image_cut', 320)
         self.declare_parameter('right_image_cut', 5)
-        self.declare_parameter('gray_threshold', 128)  # new parameter for adjustable gray tone
+        self.declare_parameter('gray_threshold', 64)  # new parameter for adjustable gray tone
 
         # position of brightest pixel in
         self.lineposition = 640 / 2
