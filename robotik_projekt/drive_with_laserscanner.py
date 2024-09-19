@@ -94,7 +94,7 @@ class SimpleDriving(rclpy.node.Node):
                 self.drive_publisher.publish(msg)
                 self.obstacle_state = AvoidanceStates.OBSTACLE_IN_FRONT
         elif self.obstacle_state == AvoidanceStates.OBSTACLE_IN_FRONT:
-            msg.angular.z = speed_turn
+            msg.angular.z = -speed_turn
             self.drive_publisher.publish(msg)
             time.sleep(timeout_turn)
             msg.angular.z = 0.0
@@ -108,7 +108,7 @@ class SimpleDriving(rclpy.node.Node):
             self.drive_publisher.publish(msg)
             self.obstacle_state = AvoidanceStates.TURNING_RIGHT
         elif self.obstacle_state == AvoidanceStates.TURNING_RIGHT:
-            msg.angular.z = -speed_turn
+            msg.angular.z = speed_turn
             self.drive_publisher.publish(msg)
             time.sleep(timeout_turn)
             msg.angular.z = 0.0
@@ -122,7 +122,7 @@ class SimpleDriving(rclpy.node.Node):
             self.drive_publisher.publish(msg)
             self.obstacle_state = AvoidanceStates.REARRANGE_RIGHT
         elif self.obstacle_state == AvoidanceStates.REARRANGE_RIGHT:
-            msg.angular.z = -speed_turn
+            msg.angular.z = speed_turn
             self.drive_publisher.publish(msg)
             time.sleep(timeout_turn)
             msg.angular.z = 0.0
