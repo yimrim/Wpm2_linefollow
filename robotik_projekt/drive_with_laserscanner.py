@@ -37,7 +37,7 @@ class SimpleDriving(rclpy.node.Node):
         self.declare_parameter('laserscan_beam_to_use', 0)
 
         # variable for the last sensor reading
-        self.last_distance = 0.0
+        self.last_distance = 100.0
 
         # initialize state
         self.obstacle_state = AvoidanceStates.NO_OBSTACLE
