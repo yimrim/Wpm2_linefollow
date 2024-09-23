@@ -28,7 +28,7 @@ class Stoplight(rclpy.node.Node):
         qos_policy = rclpy.qos.QoSProfile(reliability=rclpy.qos.ReliabilityPolicy.BEST_EFFORT,
                                           history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                                           depth=1)
-        self.publisher_ = self.create_publisher(Bool, 'stoplight', False)
+        self.publisher_ = self.create_publisher(Bool, '/stoplight', False)
 
         # create subscribers for image data with changed qos
         self.subscription = self.create_subscription(

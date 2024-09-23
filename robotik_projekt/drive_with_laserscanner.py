@@ -9,6 +9,7 @@ import rclpy
 import rclpy.node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
+from std_msgs.msg import Bool
 from enum import Enum
 
 class AvoidanceStates(Enum):
@@ -56,7 +57,8 @@ class SimpleDriving(rclpy.node.Node):
         self.subscription  # prevent unused variable warning
 
         # create publisher for driving commands
-        self.drive_publisher = self.create_publisher(Twist, '/cmd_vel', 1)
+        self.drive_publisher = self.create_publisher(Twist, '/obstacle_avoidance_twist', 1)
+        self.obstacle_detector_publisher = self.create_publisher(Bool, '/obstacle_detector', False)
 
         # create timer to periodically invoke the driving logic
         timer_period = 0.5  # seconds
@@ -84,12 +86,16 @@ class SimpleDriving(rclpy.node.Node):
         msg = Twist()
         msg.linear.x = 0.0
         msg.angular.y = 0.0
+
+        bool_msg = Bool()
         if self.obstacle_state == AvoidanceStates.NO_OBSTACLE:
 
             if self.last_distance > distance_stop:
-                msg.linear.x = speed_drive
-                self.drive_publisher.publish(msg)
+                bool_msg.data = False
+                self.obstacle_detector_publisher.publish(bool_msg)
             else:
+                bool_msg.data = True
+                self.obstacle_detector_publisher.publish(bool_msg)
                 msg.linear.x = 0.0
                 self.drive_publisher.publish(msg)
                 self.obstacle_state = AvoidanceStates.OBSTACLE_IN_FRONT
