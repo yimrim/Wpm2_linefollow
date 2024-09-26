@@ -5,7 +5,7 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='robotik_projekt',
-            executable='line_following_dark_lines',
+            executable='line_following_dark_line',
 
             # activate output
             output='screen',
