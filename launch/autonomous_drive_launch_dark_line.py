@@ -8,7 +8,7 @@ def generate_launch_description():
         # Linienverfolgungs-Node
         Node(
             package='robotik_projekt',
-            executable='line_following_darl_line',
+            executable='line_following_dark_line',
             output='screen',
             emulate_tty=True,
             arguments=['__log_level:=debug']
