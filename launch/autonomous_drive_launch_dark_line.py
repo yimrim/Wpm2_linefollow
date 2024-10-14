@@ -24,7 +24,7 @@ def generate_launch_description():
         # Hindernisvermeidungs-Node mit Laserscanner
         Node(
             package='robotik_projekt',
-            executable='drive_with_laserscanner',
+            executable='obstacle_avoidance',
             output='screen',
             emulate_tty=True,
             arguments=['__log_level:=debug'],

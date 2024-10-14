@@ -1,16 +1,12 @@
-"""
-Simple driving node that is based on the driving behavior of a simple vacuum cleaner robot: The robot turns as long as
-an obstacle is detected in the defined area, otherwise it drives straight ahead. To detect obstacles, only one measurement
-value is used per scan of the laser scanner.
-"""
 import time
+from enum import Enum
 
 import rclpy
 import rclpy.node
 from geometry_msgs.msg import Twist
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Bool
-from enum import Enum
+
 
 class AvoidanceStates(Enum):
     NO_OBSTACLE = 0,
@@ -24,7 +20,8 @@ class AvoidanceStates(Enum):
     REARRANGE_IN_FRONT = 8,
     REARRANGE_LEFT = 9,
 
-class SimpleDriving(rclpy.node.Node):
+
+class ObstacleAvoidance(rclpy.node.Node):
 
     def __init__(self):
         super().__init__('drive_with_scanner')
@@ -48,7 +45,7 @@ class SimpleDriving(rclpy.node.Node):
                                           history=rclpy.qos.HistoryPolicy.KEEP_LAST,
                                           depth=1)
 
-        # create subscribers for laser scan data with changed qos
+        # create subscribers
         self.subscription = self.create_subscription(
             LaserScan,
             'scan',
@@ -56,7 +53,7 @@ class SimpleDriving(rclpy.node.Node):
             qos_profile=qos_policy)
         self.subscription  # prevent unused variable warning
 
-        # create publisher for driving commands
+        # publishers
         self.drive_publisher = self.create_publisher(Twist, '/obstacle_avoidance_twist', 1)
         self.obstacle_detector_publisher = self.create_publisher(Bool, '/obstacle_detector', False)
 
@@ -64,89 +61,75 @@ class SimpleDriving(rclpy.node.Node):
         timer_period = 0.5  # seconds
         self.my_timer = self.create_timer(timer_period, self.timer_callback)
 
-    # handling received laser scan data
     def scanner_callback(self, msg):
+        beam_to_use = self.get_parameter('laserscan_beam_to_use').get_parameter_value().integer_value
+        self.last_distance = msg.ranges[beam_to_use]
 
-        # saving the required sensor value, no further processing at this point
-        self.last_distance = msg.ranges[self.get_parameter('laserscan_beam_to_use').get_parameter_value().integer_value]
-        print(self.last_distance)
+    def publish_drive_command(self, linear=0.0, angular=0.0):
+        msg = Twist()
+        msg.linear.x = linear
+        msg.angular.z = angular
+        self.drive_publisher.publish(msg)
 
-    # driving logic
+    def publish_obstacle_detector(self, detected):
+        bool_msg = Bool()
+        bool_msg.data = detected
+        self.obstacle_detector_publisher.publish(bool_msg)
+
+    def sleep_and_stop(self, timeout):
+        time.sleep(timeout)
+        self.publish_drive_command(0.0, 0.0)
+
     def timer_callback(self):
-
+        # Retrieve parameters
         distance_stop = self.get_parameter('distance_to_stop').get_parameter_value().double_value
         speed_turn = self.get_parameter('speed_turn').get_parameter_value().double_value
         speed_drive = self.get_parameter('speed_drive').get_parameter_value().double_value
         timeout_turn = self.get_parameter('timeout_turn').get_parameter_value().double_value
         timeout_drive = self.get_parameter('timeout_drive').get_parameter_value().double_value
 
-        print(self.obstacle_state)
-
-
-        msg = Twist()
-        msg.linear.x = 0.0
-        msg.angular.y = 0.0
-
-        bool_msg = Bool()
+        # Obstacle avoidance logic
         if self.obstacle_state == AvoidanceStates.NO_OBSTACLE:
-
             if self.last_distance > distance_stop:
-                bool_msg.data = False
-                self.obstacle_detector_publisher.publish(bool_msg)
+                self.publish_obstacle_detector(False)
             else:
-                bool_msg.data = True
-                self.obstacle_detector_publisher.publish(bool_msg)
-                msg.linear.x = 0.0
-                self.drive_publisher.publish(msg)
+                self.publish_obstacle_detector(True)
+                self.publish_drive_command(0.0, 0.0)
                 self.obstacle_state = AvoidanceStates.OBSTACLE_IN_FRONT
+
         elif self.obstacle_state == AvoidanceStates.OBSTACLE_IN_FRONT:
-            msg.angular.z = speed_turn
-            self.drive_publisher.publish(msg)
-            time.sleep(timeout_turn)
-            msg.angular.z = 0.0
-            self.drive_publisher.publish(msg)
+            self.publish_drive_command(angular=speed_turn)
+            self.sleep_and_stop(timeout_turn)
             self.obstacle_state = AvoidanceStates.DRIVING_FORWARD
+
         elif self.obstacle_state == AvoidanceStates.DRIVING_FORWARD:
-            msg.linear.x = speed_drive
-            self.drive_publisher.publish(msg)
-            time.sleep(timeout_drive)
-            msg.linear.x = 0.0
-            self.drive_publisher.publish(msg)
+            self.publish_drive_command(linear=speed_drive)
+            self.sleep_and_stop(timeout_drive)
             self.obstacle_state = AvoidanceStates.TURNING_RIGHT
+
         elif self.obstacle_state == AvoidanceStates.TURNING_RIGHT:
-            msg.angular.z = -speed_turn
-            self.drive_publisher.publish(msg)
-            time.sleep(timeout_turn)
-            msg.angular.z = 0.0
-            self.drive_publisher.publish(msg)
+            self.publish_drive_command(angular=-speed_turn)
+            self.sleep_and_stop(timeout_turn)
             self.obstacle_state = AvoidanceStates.PASS_OBSTACLE
+
         elif self.obstacle_state == AvoidanceStates.PASS_OBSTACLE:
-            msg.linear.x = speed_drive
-            self.drive_publisher.publish(msg)
-            time.sleep(2 * timeout_drive)
-            msg.linear.x = 0.0
-            self.drive_publisher.publish(msg)
+            self.publish_drive_command(linear=speed_drive)
+            self.sleep_and_stop(2 * timeout_drive)
             self.obstacle_state = AvoidanceStates.REARRANGE_RIGHT
+
         elif self.obstacle_state == AvoidanceStates.REARRANGE_RIGHT:
-            msg.angular.z = -speed_turn
-            self.drive_publisher.publish(msg)
-            time.sleep(timeout_turn)
-            msg.angular.z = 0.0
-            self.drive_publisher.publish(msg)
+            self.publish_drive_command(angular=-speed_turn)
+            self.sleep_and_stop(timeout_turn)
             self.obstacle_state = AvoidanceStates.REARRANGE_IN_FRONT
+
         elif self.obstacle_state == AvoidanceStates.REARRANGE_IN_FRONT:
-            msg.linear.x = speed_drive
-            self.drive_publisher.publish(msg)
-            time.sleep(timeout_drive)
-            msg.linear.x = 0.0
-            self.drive_publisher.publish(msg)
+            self.publish_drive_command(linear=speed_drive)
+            self.sleep_and_stop(timeout_drive)
             self.obstacle_state = AvoidanceStates.REARRANGE_LEFT
+
         elif self.obstacle_state == AvoidanceStates.REARRANGE_LEFT:
-            msg.angular.z = speed_turn
-            self.drive_publisher.publish(msg)
-            time.sleep(timeout_turn)
-            msg.angular.z = 0.0
-            self.drive_publisher.publish(msg)
+            self.publish_drive_command(angular=speed_turn)
+            self.sleep_and_stop(timeout_turn)
             self.obstacle_state = AvoidanceStates.NO_OBSTACLE
 
 
@@ -154,7 +137,7 @@ def main(args=None):
     print('Hi from obstacle avoidance')
     rclpy.init(args=args)
 
-    node = SimpleDriving()
+    node = ObstacleAvoidance()
 
     rclpy.spin(node)
 

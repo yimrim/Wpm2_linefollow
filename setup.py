@@ -23,7 +23,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'drive_with_laserscanner = robotik_projekt.drive_with_laserscanner:main',
+            'obstacle_avoidance = robotik_projekt.obstacle_avoidance:main',
             'line_following = robotik_projekt.line_following:main',
             'line_following_dark_line = robotik_projekt.line_following_dark_line:main',
             'stoplight = robotik_projekt.stoplight:main',

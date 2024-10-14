@@ -2,7 +2,7 @@ from launch_ros.actions import Node
 
 from launch import LaunchDescription
 
-
+# launch file für autonomes fahren mit hellen linien
 def generate_launch_description():
     return LaunchDescription([
         # Linienverfolgungs-Node
@@ -24,7 +24,7 @@ def generate_launch_description():
         # Hindernisvermeidungs-Node mit Laserscanner
         Node(
             package='robotik_projekt',
-            executable='drive_with_laserscanner',
+            executable='obstacle_avoidance',
             output='screen',
             emulate_tty=True,
             arguments=['__log_level:=debug'],

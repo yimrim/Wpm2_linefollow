@@ -79,7 +79,7 @@ class LineFollowing(rclpy.node.Node):
         color = (255,0,0)
         thickness = 2
 
-        # get the lowest row from image
+        # get the relevant row from image
         img_row = img_gray[height - height_offset, :]
 
         self.lineposition = width / 2

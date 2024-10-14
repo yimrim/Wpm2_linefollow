@@ -1,6 +1,7 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
+# launch file für die linienerkennung mit dunklen linien
 def generate_launch_description():
     return LaunchDescription([
         Node(

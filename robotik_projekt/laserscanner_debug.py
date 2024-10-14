@@ -1,19 +1,13 @@
-"""
-Simple driving node that is based on the driving behavior of a simple vacuum cleaner robot: The robot turns as long as
-an obstacle is detected in the defined area, otherwise it drives straight ahead. To detect obstacles, only one measurement
-value is used per scan of the laser scanner.
-"""
 import rclpy
 import rclpy.node
 from sensor_msgs.msg import LaserScan
 
-class SimpleDriving(rclpy.node.Node):
+class LaserscannerDebug(rclpy.node.Node):
 
     def __init__(self):
         super().__init__('drive_with_scanner')
 
         # definition of the parameters that can be changed at runtime
-        self.declare_parameter('distance_to_stop', 0.3)
         self.declare_parameter('laserscan_beam_to_use', 0)
 
         # variable for the last sensor reading
@@ -44,7 +38,7 @@ def main(args=None):
     print('Hi from obstacle avoidance debug')
     rclpy.init(args=args)
 
-    node = SimpleDriving()
+    node = LaserscannerDebug()
 
     rclpy.spin(node)
 

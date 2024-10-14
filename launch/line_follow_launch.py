@@ -1,6 +1,7 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
+# launch file für die linienerkennung mit weißen linien
 def generate_launch_description():
     return LaunchDescription([
         Node(
@@ -14,10 +15,5 @@ def generate_launch_description():
             remappings=[
                ('/line_following_twist', '/cmd_vel')
             ],
-            # parameters=[
-            #     {'boundary_left': 92},
-            #     {'boundary_right': 198},
-            #     {'threshold_line': 102}
-            # ]
         ),
     ])
